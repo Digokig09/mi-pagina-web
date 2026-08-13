@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impulso Creativo - Tienda</title>
+    <style>
+        /* =========================================
+           Variables de Color
+           ========================================= */
+        :root {
+            --azul-petroleo: #133c4a;
+            --amarillo-oro: #d4a336;
+            --verde-claro: #68a39d;
+            --fondo-crema: #f7f7f3;
+            --blanco: #ffffff;
+            --texto-gris: #555555;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--fondo-crema);
+            color: var(--azul-petroleo);
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('watermarked_img_15812534906612350494.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 40%;
+            opacity: 0.05;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        header {
+            background-color: var(--azul-petroleo);
+            color: var(--blanco);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            box-shadow: 0 4px 6px rgba(19, 60, 74, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .logo-header {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 50%;
+            background-color: var(--blanco);
+            padding: 2px;
+            box-shadow: 0 0 10px rgba(212, 163, 54, 0.5);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+            letter-spacing: 1px;
+        }
+
+        .contenedor {
+            display: flex;
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            align-items: flex-start;
+        }
+
+        .productos {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .tarjeta-producto {
+            background: var(--blanco);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            border-left: 6px solid var(--amarillo-oro);
+            transition: transform 0.3s ease;
+        }
+
+        .tarjeta-producto:hover {
+            transform: translateY(-5px);
+            /* Pequeño levante al ver la tarjeta */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .img-producto {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: opacity 0.3s ease-in-out;
+            /* Animación para el cambio de imagen */
+        }
+
+        .info-producto {
+            flex: 1;
+        }
+
+        .tarjeta-producto h3 {
+            margin: 0 0 8px 0;
+            color: var(--azul-petroleo);
+            font-size: 1.4em;
+        }
+
+        .descripcion-producto {
+            font-size: 0.95em;
+            color: var(--texto-gris);
+            margin: 0 0 12px 0;
+            line-height: 1.5;
+        }
+
+        .precio {
+            font-weight: 900;
+            color: var(--amarillo-oro);
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+
+        /* =========================================
+           NUEVO: Chips de Selección (Reemplazo del Select)
+           ========================================= */
+        .opciones-titulo {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: var(--texto-gris);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .variantes-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            /* Para que bajen de línea si hay muchos */
+        }
+
+        .variante-radio {
+            display: none;
+            /* Escondemos el circulito feo del radio button */
+        }
+
+        .variante-label {
+            padding: 8px 15px;
+            border: 2px solid var(--azul-petroleo);
+            border-radius: 20px;
+            /* Hace que parezca una píldora/chip */
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: var(--azul-petroleo);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            /* Transición súper suave */
+            background-color: transparent;
+        }
+
+        /* Cuando pasas el mouse por encima del chip */
+        .variante-label:hover {
+            background-color: rgba(19, 60, 74, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Cuando el chip está seleccionado */
+        .variante-radio:checked+.variante-label {
+            background-color: var(--azul-petroleo);
+            color: var(--blanco);
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(19, 60, 74, 0.3);
+            border-color: var(--azul-petroleo);
+        }
+
+        /* =========================================
+           Animaciones de Botones
+           ========================================= */
+        .btn-agregar {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: var(--amarillo-oro);
+            color: var(--azul-petroleo);
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            /* Efecto de rebote en la transición */
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s, background-color 0.3s;
+        }
+
+        .btn-agregar:hover {
+            background-color: #f0bc46;
+            transform: translateY(-4px) scale(1.02);
+            /* Se hace grande y sube */
+            box-shadow: 0 8px 15px rgba(212, 163, 54, 0.4);
+        }
+
+        .btn-agregar:active {
+            transform: translateY(2px) scale(0.95);
+            /* Efecto de "aplastar" el botón */
+            box-shadow: 0 2px 5px rgba(212, 163, 54, 0.4);
+        }
+
+        .carrito-panel {
+            flex: 1;
+            background: var(--blanco);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 20px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            border-top: 6px solid var(--verde-claro);
+        }
+
+        .carrito-panel h2 {
+            margin-top: 0;
+            color: var(--azul-petroleo);
+            border-bottom: 2px dashed #eee;
+            padding-bottom: 10px;
+        }
+
+        .lista-carrito {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .item-carrito {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 15px 0;
+            animation: aparecerCarrito 0.4s ease-out;
+            /* Animación al entrar al carrito */
+        }
+
+        @keyframes aparecerCarrito {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .img-carrito {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .info-item-carrito {
+            flex: 1;
+            font-size: 0.9em;
+            color: var(--texto-gris);
+        }
+
+        .info-item-carrito strong {
+            color: var(--azul-petroleo);
+            font-size: 1.1em;
+        }
+
+        .info-item-carrito p {
+            margin: 2px 0;
+        }
+
+        .subtotal-item {
+            color: var(--amarillo-oro);
+            font-weight: 900;
+            font-size: 1.1em;
+        }
+
+        /* Animación de temblor para eliminar */
+        @keyframes temblor {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(-15deg);
+            }
+
+            50% {
+                transform: rotate(15deg);
+            }
+
+            75% {
+                transform: rotate(-15deg);
+            }
+        }
+
+        .btn-eliminar {
+            background: #ffeded;
+            border: none;
+            color: #e74c3c;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .btn-eliminar:hover {
+            background: #e74c3c;
+            color: white;
+            animation: temblor 0.4s ease-in-out;
+        }
+
+        .total-seccion {
+            border-top: 2px dashed #eee;
+            padding-top: 20px;
+            font-size: 1.4em;
+            color: var(--azul-petroleo);
+            text-align: right;
+        }
+
+        /* Animación de Latido/Pulso para WhatsApp */
+        @keyframes pulsoWhatsApp {
+            0% {
+                box-shadow: 0 0 0 0 rgba(104, 163, 157, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(104, 163, 157, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(104, 163, 157, 0);
+            }
+        }
+
+        .btn-whatsapp {
+            background-color: var(--verde-claro);
+            color: var(--blanco);
+            border: none;
+            width: 100%;
+            font-weight: 900;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 15px;
+            margin-top: 15px;
+            transition: transform 0.3s, background-color 0.3s;
+            text-transform: uppercase;
+            animation: pulsoWhatsApp 2s infinite;
+            /* Activa el pulso constante */
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #558a84;
+            transform: scale(1.02);
+            animation: none;
+            /* Detiene el pulso al pasar el ratón para que no maree */
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <img src="imagenes/logo.png" alt="Logo Impulso Creativo" class="logo-header">
+        <h1>Impulso Creativo</h1>
+    </header>
+
+    <div class="contenedor">
+        <div class="productos">
+
+            <!-- Producto 1 (Playera) -->
+            <div class="tarjeta-producto">
+                <img src="imagenes/playera_deportiva.webp" id="img-playera" alt="Playera Deportiva"
+                    class="img-producto">
+                <div class="info-producto">
+                    <h3>Playera Deportiva "Emprende"</h3>
+                    <p class="descripcion-producto">Playera de tela transpirable ideal para el día a día. Diseño
+                        minimalista con el logo en el pecho.</p>
+                    <p class="precio">$250.00</p>
+
+                    <span class="opciones-titulo">Selecciona tu talla:</span>
+                    <div class="variantes-container">
+                        <!-- Variante 1 -->
+                        <input type="radio" name="var-playera" id="playera-ch" value="Chica" class="variante-radio"
+                            checked>
+                        <label for="playera-ch" class="variante-label">Ch</label>
+                        <!-- Variante 2 -->
+                        <input type="radio" name="var-playera" id="playera-m" value="Mediana" class="variante-radio">
+                        <label for="playera-m" class="variante-label">M</label>
+                        <!-- Variante 3 -->
+                        <input type="radio" name="var-playera" id="playera-g" value="Grande" class="variante-radio">
+                        <label for="playera-g" class="variante-label">G</label>
+                    </div>
+
+                    <button class="btn-agregar"
+                        onclick="agregarAlCarrito('Playera Deportiva', 250, 'var-playera', 'img-playera')">Agregar al
+                        Carrito</button>
+                </div>
+            </div>
+
+            <!-- Producto 2 (Gorra - Cambia Imagen) -->
+            <div class="tarjeta-producto">
+                <img src="imagenes/gorra_azulpetroleo.png" id="img-gorra" alt="Gorra Personalizada"
+                    class="img-producto">
+                <div class="info-producto">
+                    <h3>Gorra "Impulso"</h3>
+                    <p class="descripcion-producto">Gorra ajustable con detalles bordados. Estilo urbano y protección
+                        solar.</p>
+                    <p class="precio">$150.00</p>
+
+                    <span class="opciones-titulo">Elige el color:</span>
+                    <div class="variantes-container">
+                        <input type="radio" name="var-gorra" id="gorra-azul" value="Azul Petróleo"
+                            class="variante-radio" data-img="imagenes/gorra_azulpetroleo.png"
+                            onchange="cambiarImagen(this, 'img-gorra')" checked>
+                        <label for="gorra-azul" class="variante-label">Petróleo</label>
+
+                        <input type="radio" name="var-gorra" id="gorra-crema" value="Blanco Crema"
+                            class="variante-radio" data-img="imagenes/gorra_blancocrema.png"
+                            onchange="cambiarImagen(this, 'img-gorra')">
+                        <label for="gorra-crema" class="variante-label">Crema</label>
+                    </div>
+
+                    <button class="btn-agregar"
+                        onclick="agregarAlCarrito('Gorra Impulso', 150, 'var-gorra', 'img-gorra')">Agregar al
+                        Carrito</button>
+                </div>
+            </div>
+
+            <!-- Producto 3 (Taza - Cambia Imagen) -->
+            <div class="tarjeta-producto">
+                <img src="imagenes/taza_logo.png" id="img-taza" alt="Taza de Cerámica" class="img-producto">
+                <div class="info-producto">
+                    <h3>Taza "Ideas Claras"</h3>
+                    <p class="descripcion-producto">Taza de 11 oz resistente a microondas. Ideal para esas largas noches
+                        de trabajo y planeación.</p>
+                    <p class="precio">$80.00</p>
+
+                    <span class="opciones-titulo">Estilo de estampado:</span>
+                    <div class="variantes-container">
+                        <input type="radio" name="var-taza" id="taza-logo" value="Logo Clásico" class="variante-radio"
+                            data-img="imagenes/taza_logo.png" onchange="cambiarImagen(this, 'img-taza')" checked>
+                        <label for="taza-logo" class="variante-label">Logo Clásico</label>
+
+                        <input type="radio" name="var-taza" id="taza-frase" value="Frase Motivacional"
+                            class="variante-radio" data-img="imagenes/taza_frase.png"
+                            onchange="cambiarImagen(this, 'img-taza')">
+                        <label for="taza-frase" class="variante-label">Frase</label>
+                    </div>
+
+                    <button class="btn-agregar"
+                        onclick="agregarAlCarrito('Taza Ideas Claras', 80, 'var-taza', 'img-taza')">Agregar al
+                        Carrito</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sección del Carrito -->
+        <div class="carrito-panel">
+            <h2>Tu Carrito 🛒</h2>
+            <ul id="lista-carrito" class="lista-carrito">
+                <li style="color: #999; font-style: italic;">Tu carrito se ve un poco vacío...</li>
+            </ul>
+            <div class="total-seccion">
+                Total: $<span id="total-precio" style="color: var(--amarillo-oro); font-weight: 900;">0.00</span>
+            </div>
+            <button class="btn-whatsapp" onclick="enviarPedidoWhatsApp()">Enviar Pedido 📱</button>
+        </div>
+    </div>
+
+    <script>
+        let carrito = [];
+        let total = 0;
+
+        // Función mejorada para cambiar la imagen con un pequeño desvanecimiento
+        function cambiarImagen(radioElement, idImagen) {
+            const nuevaImagenUrl = radioElement.getAttribute('data-img');
+            if (nuevaImagenUrl) {
+                const imgElement = document.getElementById(idImagen);
+
+                // Efecto de desvanecimiento
+                imgElement.style.opacity = '0.3';
+
+                // Esperamos un momento cortito y cambiamos la foto
+                setTimeout(() => {
+                    imgElement.src = nuevaImagenUrl;
+                    imgElement.style.opacity = '1';
+                }, 200);
+            }
+        }
+
+        // Lógica actualizada para leer el radio button seleccionado en lugar del select
+        function agregarAlCarrito(nombreProducto, precioProducto, nombreGrupoRadio, idImagen) {
+            // Buscamos cuál de los "chips" de ese grupo está seleccionado (checked)
+            const radioSeleccionado = document.querySelector(`input[name="${nombreGrupoRadio}"]:checked`);
+
+            if (!radioSeleccionado) {
+                alert("Por favor, selecciona una opción antes de agregar al carrito.");
+                return;
+            }
+
+            const opcionSeleccionada = radioSeleccionado.value;
+            const imagenUrl = document.getElementById(idImagen).src;
+
+            const indiceExistente = carrito.findIndex(item =>
+                item.nombre === nombreProducto && item.opcion === opcionSeleccionada
+            );
+
+            if (indiceExistente !== -1) {
+                carrito[indiceExistente].cantidad += 1;
+            } else {
+                const producto = {
+                    nombre: nombreProducto,
+                    precio: precioProducto,
+                    opcion: opcionSeleccionada,
+                    imagen: imagenUrl,
+                    cantidad: 1
+                };
+                carrito.push(producto);
+            }
+
+            total += precioProducto;
+            actualizarInterfazCarrito();
+        }
+
+        function eliminarDelCarrito(nombreProducto, opcionSeleccionada) {
+            const indice = carrito.findIndex(item =>
+                item.nombre === nombreProducto && item.opcion === opcionSeleccionada
+            );
+
+            if (indice !== -1) {
+                total -= (carrito[indice].precio * carrito[indice].cantidad);
+                carrito.splice(indice, 1);
+                if (total < 0) total = 0;
+                actualizarInterfazCarrito();
+            }
+        }
+
+        function actualizarInterfazCarrito() {
+            const lista = document.getElementById('lista-carrito');
+            lista.innerHTML = '';
+
+            if (carrito.length === 0) {
+                lista.innerHTML = '<li style="color: #999; font-style: italic;">Tu carrito se ve un poco vacío...</li>';
+            } else {
+                carrito.forEach((item) => {
+                    const li = document.createElement('li');
+                    li.className = 'item-carrito';
+
+                    const subtotal = item.precio * item.cantidad;
+
+                    li.innerHTML = `
+                        <img src="${item.imagen}" class="img-carrito" alt="${item.nombre}">
+                        <div class="info-item-carrito">
+                            <strong>${item.nombre}</strong><br>
+                            ${item.opcion} | Cant: ${item.cantidad}<br>
+                            <span class="subtotal-item">$${subtotal.toFixed(2)}</span>
+                        </div>
+                        <button class="btn-eliminar" onclick="eliminarDelCarrito('${item.nombre}', '${item.opcion}')" title="Quitar">✖</button>
+                    `;
+                    lista.appendChild(li);
+                });
+            }
+
+            document.getElementById('total-precio').textContent = total.toFixed(2);
+        }
+
+        function enviarPedidoWhatsApp() {
+            if (carrito.length === 0) {
+                alert("Agrega al menos un producto al carrito antes de hacer el pedido.");
+                return;
+            }
+
+            const numeroVendedor = "524621941331"; // Tu número aquí
+
+            let mensaje = "Hola Impulso Creativo, me gustaría hacer el siguiente pedido:\n\n";
+
+            carrito.forEach((item) => {
+                const subtotal = item.precio * item.cantidad;
+                mensaje += `▪ ${item.cantidad}x ${item.nombre} (${item.opcion}) - $${subtotal.toFixed(2)}\n`;
+            });
+
+            mensaje += `\n*Total a pagar: $${total.toFixed(2)}*\n\n¿Me podrían confirmar el pedido y método de pago?`;
+
+            const urlWhatsApp = `https://wa.me/${numeroVendedor}?text=${encodeURIComponent(mensaje)}`;
+            window.open(urlWhatsApp, '_blank');
+        }
+    </script>
+</body>
+
+</html>
